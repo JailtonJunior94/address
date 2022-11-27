@@ -1,0 +1,95 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Address API",
+        "title": "Address API",
+        "termsOfService": "http://swagger.io/terms",
+        "contact": {
+            "name": "Jailton Junior",
+            "url": "http://jailton.junior.net",
+            "email": "jailton.junior94@outlook.com"
+        },
+        "license": {
+            "name": "Jailton Junior License",
+            "url": "http://jailton.junior.net"
+        },
+        "version": "1.0"
+    },
+    "basePath": "/",
+    "paths": {
+        "/address/{cep}": {
+            "get": {
+                "description": "Get Address By CEP",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Address"
+                ],
+                "summary": "Get Address By CEP",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "CEP",
+                        "name": "cep",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.AddressResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dtos.AddressResponse": {
+            "type": "object",
+            "properties": {
+                "cep": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "neighborhood": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.Error": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

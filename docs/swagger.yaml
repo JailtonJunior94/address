@@ -1,0 +1,63 @@
+basePath: /
+definitions:
+  dtos.AddressResponse:
+    properties:
+      cep:
+        type: string
+      city:
+        type: string
+      neighborhood:
+        type: string
+      state:
+        type: string
+      street:
+        type: string
+    type: object
+  dtos.Error:
+    properties:
+      message:
+        type: string
+    type: object
+info:
+  contact:
+    email: jailton.junior94@outlook.com
+    name: Jailton Junior
+    url: http://jailton.junior.net
+  description: Address API
+  license:
+    name: Jailton Junior License
+    url: http://jailton.junior.net
+  termsOfService: http://swagger.io/terms
+  title: Address API
+  version: "1.0"
+paths:
+  /address/{cep}:
+    get:
+      consumes:
+      - application/json
+      description: Get Address By CEP
+      parameters:
+      - description: CEP
+        in: path
+        name: cep
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.AddressResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dtos.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.Error'
+      summary: Get Address By CEP
+      tags:
+      - Address
+swagger: "2.0"
