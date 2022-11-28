@@ -31,7 +31,8 @@ func main() {
 	router.Use(middleware.Heartbeat("/health"))
 
 	correiosService := services.NewCorreiosService()
-	addressHandler := handlers.NewAdressHandler(correiosService)
+	viaCepService := services.NewViaCepService()
+	addressHandler := handlers.NewAdressHandler(correiosService, viaCepService)
 
 	router.Get("/address/{cep}", addressHandler.Address)
 

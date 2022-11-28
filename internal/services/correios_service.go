@@ -32,7 +32,7 @@ func (s *CorreiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error
 				</soapenv:Body>
 			</soapenv:Envelope>
 		`
-	req, err := http.NewRequest("POST", url, bytes.NewBufferString(payload))
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBufferString(payload))
 	if err != nil {
 		return nil, err
 	}

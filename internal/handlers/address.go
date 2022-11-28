@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/jailtonjunior94/address/internal/dtos"
 	"github.com/jailtonjunior94/address/internal/interfaces"
 	"github.com/jailtonjunior94/address/pkg/responses"
 
@@ -11,10 +13,11 @@ import (
 
 type AddressHandler struct {
 	CorreiosService interfaces.CorreiosService
+	ViaCepService   interfaces.ViaCepService
 }
 
-func NewAdressHandler(c interfaces.CorreiosService) *AddressHandler {
-	return &AddressHandler{CorreiosService: c}
+func NewAdressHandler(c interfaces.CorreiosService, v interfaces.ViaCepService) *AddressHandler {
+	return &AddressHandler{CorreiosService: c, ViaCepService: v}
 }
 
 // Get Address By CEP godoc
@@ -35,10 +38,35 @@ func (h *AddressHandler) Address(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	address, err := h.CorreiosService.AddressByCEP(cep)
-	if err != nil {
-		responses.Error(w, http.StatusBadRequest, "Não foi possível obter endereço através do CEP informado")
-		return
+	errCh := make(chan error)
+	addressCorreiosCh := make(chan *dtos.AddressResponse)
+	addressViaCepCh := make(chan *dtos.AddressResponse)
+
+	go func() {
+		address, err := h.CorreiosService.AddressByCEP(cep)
+		if err != nil {
+			errCh <- err
+		}
+		addressCorreiosCh <- address
+	}()
+
+	go func() {
+		address, err := h.ViaCepService.AddressByCEP(cep)
+		if err != nil {
+			errCh <- err
+		}
+		addressViaCepCh <- address
+	}()
+
+	var address *dtos.AddressResponse
+
+	select {
+	case msg := <-addressCorreiosCh:
+		address = msg
+	case msg := <-addressViaCepCh:
+		address = msg
+	case errMsg := <-errCh:
+		log.Fatalln(errMsg)
 	}
 
 	responses.JSON(w, http.StatusOK, address)
