@@ -2,7 +2,9 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -35,7 +37,15 @@ func (s *ViaCepService) AddressByCEP(cep string) (*dtos.AddressResponse, error) 
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+
+	if res != nil {
+		defer res.Body.Close()
+	}
+
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		b, _ := ioutil.ReadAll(res.Body)
+		return nil, errors.New(fmt.Sprintf("[ERROR] [StatusCode] [%d] [Detail] [%s]", res.StatusCode, string(b)))
+	}
 
 	var result *dtos.ViaCepResponse
 	err = json.NewDecoder(res.Body).Decode(&result)
@@ -43,10 +53,12 @@ func (s *ViaCepService) AddressByCEP(cep string) (*dtos.AddressResponse, error) 
 		return nil, err
 	}
 
+	provider := dtos.NewProviderResponse("ViaCEP")
 	response := dtos.NewAddressResponse(result.Cep,
 		result.Logradouro,
 		result.Bairro,
 		result.Localidade,
-		result.Uf)
+		result.Uf,
+		provider)
 	return response, nil
 }

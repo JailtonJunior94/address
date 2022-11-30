@@ -3,6 +3,9 @@ package services
 import (
 	"bytes"
 	"encoding/xml"
+	"errors"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -44,18 +47,28 @@ func (s *CorreiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
 
-	var result *dtos.Envelope
+	if res != nil {
+		defer res.Body.Close()
+	}
+
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		b, _ := ioutil.ReadAll(res.Body)
+		return nil, errors.New(fmt.Sprintf("[ERROR] [StatusCode] [%d] [Detail] [%s]", res.StatusCode, string(b)))
+	}
+
+	var result *dtos.CorreiosResponse
 	err = xml.NewDecoder(res.Body).Decode(&result)
 	if err != nil {
 		return nil, err
 	}
 
+	provider := dtos.NewProviderResponse("Correios")
 	response := dtos.NewAddressResponse(result.Body.ConsultaCEPResponse.Return.Cep,
 		result.Body.ConsultaCEPResponse.Return.End,
 		result.Body.ConsultaCEPResponse.Return.Bairro,
 		result.Body.ConsultaCEPResponse.Return.Cidade,
-		result.Body.ConsultaCEPResponse.Return.Uf)
+		result.Body.ConsultaCEPResponse.Return.Uf,
+		provider)
 	return response, nil
 }

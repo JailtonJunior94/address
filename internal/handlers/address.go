@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/jailtonjunior94/address/internal/dtos"
@@ -38,35 +37,44 @@ func (h *AddressHandler) Address(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	errCh := make(chan error)
+	errCorreiosCh := make(chan error)
 	addressCorreiosCh := make(chan *dtos.AddressResponse)
-	addressViaCepCh := make(chan *dtos.AddressResponse)
 
-	go func() {
-		address, err := h.CorreiosService.AddressByCEP(cep)
-		if err != nil {
-			errCh <- err
-		}
-		addressCorreiosCh <- address
-	}()
+	errViaCepCh := make(chan error)
+	addressViaCepCh := make(chan *dtos.AddressResponse)
 
 	go func() {
 		address, err := h.ViaCepService.AddressByCEP(cep)
 		if err != nil {
-			errCh <- err
+			errViaCepCh <- err
 		}
 		addressViaCepCh <- address
 	}()
 
+	go func() {
+		address, err := h.CorreiosService.AddressByCEP(cep)
+		if err != nil {
+			errCorreiosCh <- err
+		}
+		addressCorreiosCh <- address
+	}()
+
+	var err error
 	var address *dtos.AddressResponse
 
 	select {
-	case msg := <-addressCorreiosCh:
-		address = msg
 	case msg := <-addressViaCepCh:
 		address = msg
-	case errMsg := <-errCh:
-		log.Fatalln(errMsg)
+	case e := <-errViaCepCh:
+		err = e
+	case msg := <-addressCorreiosCh:
+		address = msg
+	case errMsg := <-errCorreiosCh:
+		err = errMsg
+	}
+
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err.Error())
 	}
 
 	responses.JSON(w, http.StatusOK, address)

@@ -25,7 +25,7 @@ import (
 // @license.name Jailton Junior License
 // @license.url  http://jailton.junior.net
 
-// @BasePath                   /
+// @BasePath /
 func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Heartbeat("/health"))

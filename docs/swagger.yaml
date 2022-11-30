@@ -8,6 +8,8 @@ definitions:
         type: string
       neighborhood:
         type: string
+      provider:
+        $ref: '#/definitions/dtos.ProviderResponse'
       state:
         type: string
       street:
@@ -16,6 +18,11 @@ definitions:
   dtos.Error:
     properties:
       message:
+        type: string
+    type: object
+  dtos.ProviderResponse:
+    properties:
+      name:
         type: string
     type: object
 info:

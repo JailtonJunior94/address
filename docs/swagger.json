@@ -75,6 +75,9 @@
                 "neighborhood": {
                     "type": "string"
                 },
+                "provider": {
+                    "$ref": "#/definitions/dtos.ProviderResponse"
+                },
                 "state": {
                     "type": "string"
                 },
@@ -87,6 +90,14 @@
             "type": "object",
             "properties": {
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.ProviderResponse": {
+            "type": "object",
+            "properties": {
+                "name": {
                     "type": "string"
                 }
             }

@@ -2,7 +2,7 @@ package dtos
 
 import "encoding/xml"
 
-type Envelope struct {
+type CorreiosResponse struct {
 	XMLName xml.Name `xml:"Envelope"`
 	Text    string   `xml:",chardata"`
 	Soap    string   `xml:"soap,attr"`

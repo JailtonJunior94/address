@@ -83,6 +83,9 @@ const docTemplate = `{
                 "neighborhood": {
                     "type": "string"
                 },
+                "provider": {
+                    "$ref": "#/definitions/dtos.ProviderResponse"
+                },
                 "state": {
                     "type": "string"
                 },
@@ -95,6 +98,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.ProviderResponse": {
+            "type": "object",
+            "properties": {
+                "name": {
                     "type": "string"
                 }
             }
