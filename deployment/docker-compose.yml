@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  address_api:
+    container_name: address_api
+    image: address_api
+    build:
+      context: ..
+      dockerfile: cmd/Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - address_net
+    environment:
+      - ENVIRONMENT=Docker
+
+networks:
+  address_net:
+    driver: bridge
