@@ -3,27 +3,23 @@ package services
 import (
 	"bytes"
 	"encoding/xml"
-	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
-	"time"
 
 	"github.com/jailtonjunior94/address/internal/dtos"
+	"github.com/jailtonjunior94/address/internal/interfaces"
 )
 
-type CorreiosService struct {
-	HTTPClient *http.Client
+type correiosService struct {
+	httpClient interfaces.IHttpClient
 }
 
-func NewCorreiosService() *CorreiosService {
-	client := &http.Client{
-		Timeout: 60 * time.Second,
-	}
-	return &CorreiosService{HTTPClient: client}
+func NewCorreiosService(httpClient interfaces.IHttpClient) *correiosService {
+	return &correiosService{httpClient: httpClient}
 }
 
-func (s *CorreiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error) {
+func (s *correiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error) {
 	url := "https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente?wsdl"
 	payload := `
 			<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cli="http://cliente.bean.master.sigep.bsb.correios.com.br/">
@@ -43,7 +39,7 @@ func (s *CorreiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error
 	req.Header.Set("content-type", "application/soap+xml;charset=utf-8")
 	req.Header.Set("cache-control", "no-cache")
 
-	res, err := s.HTTPClient.Do(req)
+	res, err := s.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +49,8 @@ func (s *CorreiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		b, _ := ioutil.ReadAll(res.Body)
-		return nil, errors.New(fmt.Sprintf("[ERROR] [StatusCode] [%d] [Detail] [%s]", res.StatusCode, string(b)))
+		b, _ := io.ReadAll(res.Body)
+		return nil, fmt.Errorf("[ERROR] [StatusCode] [%d] [Detail] [%s]", res.StatusCode, string(b))
 	}
 
 	var result *dtos.CorreiosResponse
@@ -64,11 +60,13 @@ func (s *CorreiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error
 	}
 
 	provider := dtos.NewProviderResponse("Correios")
-	response := dtos.NewAddressResponse(result.Body.ConsultaCEPResponse.Return.Cep,
+	response := dtos.NewAddressResponse(
+		result.Body.ConsultaCEPResponse.Return.Cep,
 		result.Body.ConsultaCEPResponse.Return.End,
 		result.Body.ConsultaCEPResponse.Return.Bairro,
 		result.Body.ConsultaCEPResponse.Return.Cidade,
 		result.Body.ConsultaCEPResponse.Return.Uf,
-		provider)
+		provider,
+	)
 	return response, nil
 }

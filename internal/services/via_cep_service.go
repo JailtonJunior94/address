@@ -2,27 +2,26 @@ package services
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
 	"github.com/jailtonjunior94/address/internal/dtos"
 )
 
-type ViaCepService struct {
+type viaCepService struct {
 	HTTPClient *http.Client
 }
 
-func NewViaCepService() *ViaCepService {
+func NewViaCepService() *viaCepService {
 	client := &http.Client{
 		Timeout: 60 * time.Second,
 	}
-	return &ViaCepService{HTTPClient: client}
+	return &viaCepService{HTTPClient: client}
 }
 
-func (s *ViaCepService) AddressByCEP(cep string) (*dtos.AddressResponse, error) {
+func (s *viaCepService) AddressByCEP(cep string) (*dtos.AddressResponse, error) {
 	url := fmt.Sprintf("https://viacep.com.br/ws/%s/json/", cep)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -43,8 +42,8 @@ func (s *ViaCepService) AddressByCEP(cep string) (*dtos.AddressResponse, error) 
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		b, _ := ioutil.ReadAll(res.Body)
-		return nil, errors.New(fmt.Sprintf("[ERROR] [StatusCode] [%d] [Detail] [%s]", res.StatusCode, string(b)))
+		b, _ := io.ReadAll(res.Body)
+		return nil, fmt.Errorf("[ERROR] [StatusCode] [%d] [Detail] [%s]", res.StatusCode, string(b))
 	}
 
 	var result *dtos.ViaCepResponse

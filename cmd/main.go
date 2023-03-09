@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/jailtonjunior94/address/internal/handlers"
+	"github.com/jailtonjunior94/address/internal/interfaces"
 	"github.com/jailtonjunior94/address/internal/services"
 
 	"github.com/go-chi/chi/v5"
@@ -30,8 +31,9 @@ func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Heartbeat("/health"))
 
-	correiosService := services.NewCorreiosService()
+	httpClient := interfaces.NewHttpClient()
 	viaCepService := services.NewViaCepService()
+	correiosService := services.NewCorreiosService(httpClient)
 	addressHandler := handlers.NewAdressHandler(correiosService, viaCepService)
 
 	router.Get("/address/{cep}", addressHandler.Address)
