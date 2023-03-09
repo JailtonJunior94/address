@@ -14,19 +14,19 @@ import (
 	swagger "github.com/swaggo/http-swagger"
 )
 
-// @title          Address API
-// @version        1.0
-// @description    Address API
-// @termsOfService http://swagger.io/terms
+//	@title			Address API
+//	@version		1.0
+//	@description	Address API
+//	@termsOfService	http://swagger.io/terms
 
-// @contact.name  Jailton Junior
-// @contact.url   http://jailton.junior.net
-// @contact.email jailton.junior94@outlook.com
+//	@contact.name	Jailton Junior
+//	@contact.url	http://jailton.junior.net
+//	@contact.email	jailton.junior94@outlook.com
 
-// @license.name Jailton Junior License
-// @license.url  http://jailton.junior.net
+//	@license.name	Jailton Junior License
+//	@license.url	http://jailton.junior.net
 
-// @BasePath /
+//	@BasePath	/
 func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Heartbeat("/health"))

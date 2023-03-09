@@ -20,16 +20,16 @@ func NewAdressHandler(c interfaces.CorreiosService, v interfaces.ViaCepService) 
 }
 
 // Get Address By CEP godoc
-// @Summary     Get Address By CEP
-// @Description Get Address By CEP
-// @Tags        Address
-// @Accept      json
-// @Produce     json
-// @Param       cep path     string true "CEP"
-// @Success     200 {object} dtos.AddressResponse
-// @Failure     404 {object} dtos.Error
-// @Failure     500 {object} dtos.Error
-// @Router      /address/{cep} [get]
+//	@Summary		Get Address By CEP
+//	@Description	Get Address By CEP
+//	@Tags			Address
+//	@Accept			json
+//	@Produce		json
+//	@Param			cep	path		string	true	"CEP"
+//	@Success		200	{object}	dtos.AddressResponse
+//	@Failure		404	{object}	dtos.Error
+//	@Failure		500	{object}	dtos.Error
+//	@Router			/address/{cep} [get]
 func (h *AddressHandler) Address(w http.ResponseWriter, r *http.Request) {
 	cep := chi.URLParam(r, "cep")
 	if cep == "" {
