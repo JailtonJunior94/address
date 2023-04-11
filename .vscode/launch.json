@@ -7,9 +7,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/cmd/main.go",
-            "env": {
-                "PORT": "8080"
-            },
+            "envFile": "${workspaceFolder}/cmd/.env",
             "args": []
         }
     ]

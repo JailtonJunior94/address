@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/jailtonjunior94/address/configs"
 	"github.com/jailtonjunior94/address/internal/handlers"
 	"github.com/jailtonjunior94/address/internal/interfaces"
 	"github.com/jailtonjunior94/address/internal/services"
@@ -11,7 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	_ "github.com/jailtonjunior94/address/docs"
-	swagger "github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 //	@title			Address API
@@ -26,8 +27,13 @@ import (
 //	@license.name	Jailton Junior License
 //	@license.url	http://jailton.junior.net
 
-//	@BasePath	/
+// @BasePath	/
 func main() {
+	config, err := configs.LoadConfig(".")
+	if err != nil {
+		panic(err)
+	}
+
 	router := chi.NewRouter()
 	router.Use(middleware.Heartbeat("/health"))
 
@@ -38,7 +44,9 @@ func main() {
 
 	router.Get("/address/{cep}", addressHandler.Address)
 
-	router.Get("/docs/*", swagger.Handler(swagger.URL("http://localhost:8000/docs/doc.json")))
-	fmt.Printf("🚀 API is running on http://localhost:%v", "8000")
-	http.ListenAndServe(":8000", router)
+	router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL(fmt.Sprintf("http://localhost:%s/swagger/doc.json", config.HttpServerPort)), //The url pointing to API definition
+	))
+	fmt.Printf("🚀 API is running on http://localhost:%s", config.HttpServerPort)
+	http.ListenAndServe(":"+config.HttpServerPort, router)
 }
