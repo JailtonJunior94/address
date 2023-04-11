@@ -27,7 +27,7 @@ import (
 //	@license.name	Jailton Junior License
 //	@license.url	http://jailton.junior.net
 
-// @BasePath	/
+//	@BasePath	/
 func main() {
 	config, err := configs.LoadConfig(".")
 	if err != nil {
@@ -37,15 +37,15 @@ func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Heartbeat("/health"))
 
-	httpClient := interfaces.NewHttpClient()
-	viaCepService := services.NewViaCepService()
+	httpClient := interfaces.NewHttpClient(config)
+	viaCepService := services.NewViaCepService(httpClient)
 	correiosService := services.NewCorreiosService(httpClient)
 	addressHandler := handlers.NewAdressHandler(correiosService, viaCepService)
 
 	router.Get("/address/{cep}", addressHandler.Address)
 
 	router.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL(fmt.Sprintf("http://localhost:%s/swagger/doc.json", config.HttpServerPort)), //The url pointing to API definition
+		httpSwagger.URL(fmt.Sprintf("http://localhost:%s/swagger/doc.json", config.HttpServerPort)),
 	))
 	fmt.Printf("🚀 API is running on http://localhost:%s", config.HttpServerPort)
 	http.ListenAndServe(":"+config.HttpServerPort, router)

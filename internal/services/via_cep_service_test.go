@@ -13,19 +13,19 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type CorreiosServicesTestSuite struct {
+type ViaCepServicesTestSuite struct {
 	suite.Suite
 }
 
-func TestCorreiosServicesTestSuite(t *testing.T) {
-	suite.Run(t, new(CorreiosServicesTestSuite))
+func TestViaCepServicesTestSuite(t *testing.T) {
+	suite.Run(t, new(ViaCepServicesTestSuite))
 }
 
-func (s *CorreiosServicesTestSuite) SetupTest() {
+func (s *ViaCepServicesTestSuite) SetupTest() {
 
 }
 
-func (s *CorreiosServicesTestSuite) TestAddressByCEP() {
+func (s *ViaCepServicesTestSuite) TestAddressByCEP() {
 	type (
 		args struct {
 			cep string
@@ -37,35 +37,25 @@ func (s *CorreiosServicesTestSuite) TestAddressByCEP() {
 
 	responseValid := &http.Response{
 		StatusCode: http.StatusOK,
-		Body: io.NopCloser(strings.NewReader(`<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-		<soap:Body>
-			<ns2:consultaCEPResponse xmlns:ns2="http://cliente.bean.master.sigep.bsb.correios.com.br/">
-				<return>
-					<bairro>Parque Fernão Dias</bairro>
-					<cep>06503015</cep>
-					<cidade>Santana de Parnaíba</cidade>
-					<complemento2></complemento2>
-					<end>Rua José Pontes Zé Buraco</end>
-					<uf>SP</uf>
-				</return>
-			</ns2:consultaCEPResponse>
-		</soap:Body>
-	</soap:Envelope>`)),
+		Body: io.NopCloser(strings.NewReader(`{
+		  "cep": "06503-015",
+		  "logradouro": "Rua José Pontes Zé Buraco",
+		  "complemento": "",
+		  "bairro": "Parque Fernão Dias",
+		  "localidade": "Santana de Parnaíba",
+		  "uf": "SP",
+		  "ibge": "3547304",
+		  "gia": "6233",
+		  "ddd": "11",
+		  "siafi": "7047"
+		}`)),
 	}
 
 	respondeInvalid := &http.Response{
 		StatusCode: http.StatusInternalServerError,
-		Body: io.NopCloser(strings.NewReader(`<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-		<soap:Body>
-			<soap:Fault>
-				<faultcode>soap:Server</faultcode>
-				<faultstring>CEP INVÁLIDO</faultstring>
-				<detail>
-					<ns2:SigepClienteException xmlns:ns2="http://cliente.bean.master.sigep.bsb.correios.com.br/">CEP INVÁLIDO</ns2:SigepClienteException>
-				</detail>
-			</soap:Fault>
-		</soap:Body>
-	</soap:Envelope>`)),
+		Body: io.NopCloser(strings.NewReader(`{
+			"errorMessage": "error",
+		  }`)),
 	}
 
 	scenarios := []struct {
@@ -109,7 +99,7 @@ func (s *CorreiosServicesTestSuite) TestAddressByCEP() {
 
 	for _, scenario := range scenarios {
 		s.T().Run(scenario.name, func(t *testing.T) {
-			service := NewCorreiosService(scenario.fields.httpClient)
+			service := NewViaCepService(scenario.fields.httpClient)
 			address, err := service.AddressByCEP(scenario.args.cep)
 			scenario.expected(address, err)
 		})

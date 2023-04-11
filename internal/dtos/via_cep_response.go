@@ -9,6 +9,5 @@ type ViaCepResponse struct {
 	Ibge        string `json:"ibge"`
 	Localidade  string `json:"localidade"`
 	Logradouro  string `json:"logradouro"`
-	Siafi       string `json:"siafi"`
 	Uf          string `json:"uf"`
 }

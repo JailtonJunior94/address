@@ -5,7 +5,8 @@ import (
 )
 
 type Config struct {
-	HttpServerPort string `mapstructure:"HTTP_SERVER_PORT"`
+	HttpServerPort    string `mapstructure:"HTTP_SERVER_PORT"`
+	HttpClientTimeout int    `mapstructure:"HTTP_CLIENT_TIMEOUT_MS"`
 }
 
 func LoadConfig(path string) (*Config, error) {

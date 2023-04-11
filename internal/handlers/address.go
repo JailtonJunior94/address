@@ -20,6 +20,7 @@ func NewAdressHandler(c interfaces.CorreiosService, v interfaces.ViaCepService) 
 }
 
 // Get Address By CEP godoc
+//
 //	@Summary		Get Address By CEP
 //	@Description	Get Address By CEP
 //	@Tags			Address
@@ -76,6 +77,5 @@ func (h *AddressHandler) Address(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		responses.Error(w, http.StatusBadRequest, err.Error())
 	}
-
 	responses.JSON(w, http.StatusOK, address)
 }

@@ -5,20 +5,17 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 
 	"github.com/jailtonjunior94/address/internal/dtos"
+	"github.com/jailtonjunior94/address/internal/interfaces"
 )
 
 type viaCepService struct {
-	HTTPClient *http.Client
+	httpClient interfaces.IHttpClient
 }
 
-func NewViaCepService() *viaCepService {
-	client := &http.Client{
-		Timeout: 60 * time.Second,
-	}
-	return &viaCepService{HTTPClient: client}
+func NewViaCepService(httpClient interfaces.IHttpClient) *viaCepService {
+	return &viaCepService{httpClient: httpClient}
 }
 
 func (s *viaCepService) AddressByCEP(cep string) (*dtos.AddressResponse, error) {
@@ -32,7 +29,7 @@ func (s *viaCepService) AddressByCEP(cep string) (*dtos.AddressResponse, error) 
 	req.Header.Set("content-type", "application/json")
 	req.Header.Set("cache-control", "no-cache")
 
-	res, err := s.HTTPClient.Do(req)
+	res, err := s.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
