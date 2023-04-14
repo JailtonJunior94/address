@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-address-api
+spec:
+  replicas: {{ .Values.application.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-address-api
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-address-api
+    spec:
+      containers:
+        - name: address-api
+          image: {{ .Values.application.image.name }}:{{ .Values.application.image.tag }}
+          resources:
+            limits:
+              cpu: "50m"
+              memory: "64Mi"
+          envFrom:
+            - configMapRef:
+                name: address-config
+          ports:
+            - containerPort: {{ .Values.application.configMap.server.port }}

@@ -8,6 +8,7 @@ import (
 	"github.com/jailtonjunior94/address/internal/handlers"
 	"github.com/jailtonjunior94/address/internal/interfaces"
 	"github.com/jailtonjunior94/address/internal/services"
+	"github.com/jailtonjunior94/address/pkg/logger"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -27,19 +28,25 @@ import (
 //	@license.name	Jailton Junior License
 //	@license.url	http://jailton.junior.net
 
-//	@BasePath	/
+// @BasePath	/
 func main() {
 	config, err := configs.LoadConfig(".")
 	if err != nil {
 		panic(err)
 	}
 
+	logger, err := logger.NewLogger()
+	if err != nil {
+		panic(err)
+	}
+	defer logger.Sync()
+
 	router := chi.NewRouter()
 	router.Use(middleware.Heartbeat("/health"))
 
 	httpClient := interfaces.NewHttpClient(config)
-	viaCepService := services.NewViaCepService(httpClient)
-	correiosService := services.NewCorreiosService(httpClient)
+	viaCepService := services.NewViaCepService(config, httpClient)
+	correiosService := services.NewCorreiosService(config, httpClient)
 	addressHandler := handlers.NewAdressHandler(correiosService, viaCepService)
 
 	router.Get("/address/{cep}", addressHandler.Address)

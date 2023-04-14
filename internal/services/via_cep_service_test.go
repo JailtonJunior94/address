@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/jailtonjunior94/address/configs"
 	"github.com/jailtonjunior94/address/internal/dtos"
 	serviceMocks "github.com/jailtonjunior94/address/internal/services/mocks"
 
@@ -15,6 +16,8 @@ import (
 
 type ViaCepServicesTestSuite struct {
 	suite.Suite
+
+	config *configs.Config
 }
 
 func TestViaCepServicesTestSuite(t *testing.T) {
@@ -22,7 +25,9 @@ func TestViaCepServicesTestSuite(t *testing.T) {
 }
 
 func (s *ViaCepServicesTestSuite) SetupTest() {
-
+	s.config = &configs.Config{
+		ViaCepBaseURL: "http://localhost:3000/address/%s",
+	}
 }
 
 func (s *ViaCepServicesTestSuite) TestAddressByCEP() {
@@ -31,7 +36,7 @@ func (s *ViaCepServicesTestSuite) TestAddressByCEP() {
 			cep string
 		}
 		fields struct {
-			httpClient *serviceMocks.IHttpClient
+			httpClient *serviceMocks.HttpClient
 		}
 	)
 
@@ -68,8 +73,8 @@ func (s *ViaCepServicesTestSuite) TestAddressByCEP() {
 			name: "must return an address given a zip code",
 			args: args{cep: "06503015"},
 			fields: fields{
-				httpClient: func() *serviceMocks.IHttpClient {
-					httpClient := &serviceMocks.IHttpClient{}
+				httpClient: func() *serviceMocks.HttpClient {
+					httpClient := &serviceMocks.HttpClient{}
 					httpClient.On("Do", mock.Anything).Return(responseValid, nil)
 					return httpClient
 				}(),
@@ -84,8 +89,8 @@ func (s *ViaCepServicesTestSuite) TestAddressByCEP() {
 			name: "should return error when unable to return address",
 			args: args{cep: "06503015"},
 			fields: fields{
-				httpClient: func() *serviceMocks.IHttpClient {
-					httpClient := &serviceMocks.IHttpClient{}
+				httpClient: func() *serviceMocks.HttpClient {
+					httpClient := &serviceMocks.HttpClient{}
 					httpClient.On("Do", mock.Anything).Return(respondeInvalid, nil)
 					return httpClient
 				}(),
@@ -99,7 +104,7 @@ func (s *ViaCepServicesTestSuite) TestAddressByCEP() {
 
 	for _, scenario := range scenarios {
 		s.T().Run(scenario.name, func(t *testing.T) {
-			service := NewViaCepService(scenario.fields.httpClient)
+			service := NewViaCepService(s.config, scenario.fields.httpClient)
 			address, err := service.AddressByCEP(scenario.args.cep)
 			scenario.expected(address, err)
 		})

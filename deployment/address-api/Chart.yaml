@@ -1,0 +1,6 @@
+apiVersion: v2
+name: address-api
+description: A simple Address API
+type: application
+version: 0.1.0
+appVersion: "1.16.0"

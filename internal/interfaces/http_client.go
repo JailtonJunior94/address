@@ -7,11 +7,11 @@ import (
 	"github.com/jailtonjunior94/address/configs"
 )
 
-type IHttpClient interface {
+type HttpClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-func NewHttpClient(config *configs.Config) IHttpClient {
+func NewHttpClient(config *configs.Config) HttpClient {
 	client := &http.Client{
 		Timeout: time.Duration(config.HttpClientTimeout) * time.Second,
 	}

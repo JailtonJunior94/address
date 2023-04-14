@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: address-config
+data:
+  HTTP_SERVER_PORT: {{ .Values.application.configMap.server.port | quote }}
+  HTTP_CLIENT_TIMEOUT_MS: {{ .Values.application.configMap.httpTimeout | quote }}
+  CORREIOS_BASE_URL: {{ .Values.application.configMap.correiosBaseURL | quote }}
+  VIACEP_BASE_URL: {{ .Values.application.configMap.viaCepBaseURL | quote }}

@@ -7,6 +7,8 @@ import (
 type Config struct {
 	HttpServerPort    string `mapstructure:"HTTP_SERVER_PORT"`
 	HttpClientTimeout int    `mapstructure:"HTTP_CLIENT_TIMEOUT_MS"`
+	CorreiosBaseURL   string `mapstructure:"CORREIOS_BASE_URL"`
+	ViaCepBaseURL     string `mapstructure:"VIACEP_BASE_URL"`
 }
 
 func LoadConfig(path string) (*Config, error) {

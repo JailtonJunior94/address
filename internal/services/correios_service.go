@@ -7,20 +7,21 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/jailtonjunior94/address/configs"
 	"github.com/jailtonjunior94/address/internal/dtos"
 	"github.com/jailtonjunior94/address/internal/interfaces"
 )
 
 type correiosService struct {
-	httpClient interfaces.IHttpClient
+	config     *configs.Config
+	httpClient interfaces.HttpClient
 }
 
-func NewCorreiosService(httpClient interfaces.IHttpClient) *correiosService {
-	return &correiosService{httpClient: httpClient}
+func NewCorreiosService(config *configs.Config, httpClient interfaces.HttpClient) *correiosService {
+	return &correiosService{config: config, httpClient: httpClient}
 }
 
 func (s *correiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error) {
-	url := "https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente?wsdl"
 	payload := `
 			<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cli="http://cliente.bean.master.sigep.bsb.correios.com.br/">
 				<soapenv:Header/>
@@ -31,7 +32,7 @@ func (s *correiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error
 				</soapenv:Body>
 			</soapenv:Envelope>
 		`
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBufferString(payload))
+	req, err := http.NewRequest(http.MethodPost, s.config.CorreiosBaseURL, bytes.NewBufferString(payload))
 	if err != nil {
 		return nil, err
 	}

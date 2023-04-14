@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-address-api
+spec:
+  selector:
+    app: {{ .Release.Name }}-address-api
+  ports:
+    - port: 80
+      targetPort: {{ .Values.application.configMap.server.port }}
+  type: {{ .Values.application.service.type }}

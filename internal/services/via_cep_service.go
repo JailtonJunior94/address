@@ -6,22 +6,22 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/jailtonjunior94/address/configs"
 	"github.com/jailtonjunior94/address/internal/dtos"
 	"github.com/jailtonjunior94/address/internal/interfaces"
 )
 
 type viaCepService struct {
-	httpClient interfaces.IHttpClient
+	config     *configs.Config
+	httpClient interfaces.HttpClient
 }
 
-func NewViaCepService(httpClient interfaces.IHttpClient) *viaCepService {
-	return &viaCepService{httpClient: httpClient}
+func NewViaCepService(config *configs.Config, httpClient interfaces.HttpClient) *viaCepService {
+	return &viaCepService{config: config, httpClient: httpClient}
 }
 
 func (s *viaCepService) AddressByCEP(cep string) (*dtos.AddressResponse, error) {
-	url := fmt.Sprintf("https://viacep.com.br/ws/%s/json/", cep)
-
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(s.config.ViaCepBaseURL, cep), nil)
 	if err != nil {
 		return nil, err
 	}

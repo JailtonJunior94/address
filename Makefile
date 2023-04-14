@@ -13,5 +13,6 @@ build-address-api:
 .PHONY: mockery
 mock:
 	@mockery --dir=internal/interfaces --name=CorreiosService --filename=correios_service_mock.go --output=internal/services/mocks --outpkg=serviceMocks
-	@mockery --dir=internal/interfaces --name=IHttpClient --filename=http_client_mock.go --output=internal/services/mocks --outpkg=serviceMocks
+	@mockery --dir=internal/interfaces --name=HttpClient --filename=http_client_mock.go --output=internal/services/mocks --outpkg=serviceMocks
 	@mockery --dir=internal/interfaces --name=ViaCepService --filename=via_cep_service_mock.go --output=internal/services/mocks --outpkg=serviceMocks
+	@mockery --dir=pkg/logger --name=Logger --filename=logger_mock.go --output=pkg/logger/mocks --outpkg=loggerMocks
