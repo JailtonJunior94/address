@@ -23,9 +23,30 @@ spec:
           resources:
             limits:
               cpu: "50m"
-              memory: "64Mi"
+              memory: "32Mi"
           envFrom:
             - configMapRef:
                 name: address-config
+          startupProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.application.configMap.server.port }}
+            periodSeconds: 10
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.application.configMap.server.port }}
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.application.configMap.server.port }}
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+            successThreshold: 1
           ports:
             - containerPort: {{ .Values.application.configMap.server.port }}

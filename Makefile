@@ -8,7 +8,7 @@ swagger:
 
 build-address-api:
 	@echo "Compiling Address API..."
-	@CGO_ENABLED=0 go build -ldflags="-w -s" -o ./bin/address ./cmd/main.go
+	@CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o ./bin/address ./cmd/main.go
 
 .PHONY: mockery
 mock:

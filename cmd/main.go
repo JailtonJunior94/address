@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"net/http"
+	"time"
 
 	"github.com/jailtonjunior94/address/configs"
+	_ "github.com/jailtonjunior94/address/docs"
 	"github.com/jailtonjunior94/address/internal/handlers"
 	"github.com/jailtonjunior94/address/internal/interfaces"
 	"github.com/jailtonjunior94/address/internal/services"
@@ -12,7 +15,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	_ "github.com/jailtonjunior94/address/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -50,10 +52,19 @@ func main() {
 	addressHandler := handlers.NewAdressHandler(correiosService, viaCepService)
 
 	router.Get("/address/{cep}", addressHandler.Address)
-
 	router.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL(fmt.Sprintf("http://localhost:%s/swagger/doc.json", config.HttpServerPort)),
 	))
-	fmt.Printf("🚀 API is running on http://localhost:%s", config.HttpServerPort)
-	http.ListenAndServe(":"+config.HttpServerPort, router)
+
+	server := http.Server{
+		ReadTimeout:       time.Duration(10) * time.Second,
+		ReadHeaderTimeout: time.Duration(10) * time.Second,
+		Handler:           router,
+	}
+
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", config.HttpServerPort))
+	if err != nil {
+		panic(err)
+	}
+	server.Serve(listener)
 }

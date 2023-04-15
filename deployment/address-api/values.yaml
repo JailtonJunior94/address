@@ -1,8 +1,8 @@
 application:
-  replicas: 1
+  replicas: 3
   image:
     name: "jailtonjunior/address"
-    tag: "v1"
+    tag: "v5"
   configMap:
     server:
       port: "8000"
