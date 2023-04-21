@@ -3,6 +3,7 @@ module github.com/jailtonjunior94/address
 go 1.19
 
 require (
+	github.com/blendle/zapdriver v1.3.1
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.1

@@ -9,6 +9,7 @@ import (
 	"github.com/jailtonjunior94/address/configs"
 	"github.com/jailtonjunior94/address/internal/dtos"
 	serviceMocks "github.com/jailtonjunior94/address/internal/services/mocks"
+	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -18,6 +19,7 @@ type CorreiosServicesTestSuite struct {
 	suite.Suite
 
 	config *configs.Config
+	logger *zap.SugaredLogger
 }
 
 func TestCorreiosServicesTestSuite(t *testing.T) {
@@ -28,6 +30,7 @@ func (s *CorreiosServicesTestSuite) SetupTest() {
 	s.config = &configs.Config{
 		CorreiosBaseURL: "http://localhost:3000",
 	}
+	s.logger = zap.NewNop().Sugar()
 }
 
 func (s *CorreiosServicesTestSuite) TestAddressByCEP() {
@@ -114,7 +117,7 @@ func (s *CorreiosServicesTestSuite) TestAddressByCEP() {
 
 	for _, scenario := range scenarios {
 		s.T().Run(scenario.name, func(t *testing.T) {
-			service := NewCorreiosService(s.config, scenario.fields.httpClient)
+			service := NewCorreiosService(s.config, s.logger, scenario.fields.httpClient)
 			address, err := service.AddressByCEP(scenario.args.cep)
 			scenario.expected(address, err)
 		})

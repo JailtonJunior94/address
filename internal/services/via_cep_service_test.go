@@ -9,6 +9,7 @@ import (
 	"github.com/jailtonjunior94/address/configs"
 	"github.com/jailtonjunior94/address/internal/dtos"
 	serviceMocks "github.com/jailtonjunior94/address/internal/services/mocks"
+	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -18,6 +19,7 @@ type ViaCepServicesTestSuite struct {
 	suite.Suite
 
 	config *configs.Config
+	logger *zap.SugaredLogger
 }
 
 func TestViaCepServicesTestSuite(t *testing.T) {
@@ -28,6 +30,7 @@ func (s *ViaCepServicesTestSuite) SetupTest() {
 	s.config = &configs.Config{
 		ViaCepBaseURL: "http://localhost:3000/address/%s",
 	}
+	s.logger = zap.NewNop().Sugar()
 }
 
 func (s *ViaCepServicesTestSuite) TestAddressByCEP() {
@@ -104,7 +107,7 @@ func (s *ViaCepServicesTestSuite) TestAddressByCEP() {
 
 	for _, scenario := range scenarios {
 		s.T().Run(scenario.name, func(t *testing.T) {
-			service := NewViaCepService(s.config, scenario.fields.httpClient)
+			service := NewViaCepService(s.config, s.logger, scenario.fields.httpClient)
 			address, err := service.AddressByCEP(scenario.args.cep)
 			scenario.expected(address, err)
 		})

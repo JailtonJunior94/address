@@ -37,7 +37,7 @@ func main() {
 		panic(err)
 	}
 
-	logger, err := logger.NewLogger()
+	logger := logger.NewLogger(config)
 	if err != nil {
 		panic(err)
 	}
@@ -47,8 +47,8 @@ func main() {
 	router.Use(middleware.Heartbeat("/health"))
 
 	httpClient := interfaces.NewHttpClient(config)
-	viaCepService := services.NewViaCepService(config, httpClient)
-	correiosService := services.NewCorreiosService(config, httpClient)
+	viaCepService := services.NewViaCepService(config, logger, httpClient)
+	correiosService := services.NewCorreiosService(config, logger, httpClient)
 	addressHandler := handlers.NewAdressHandler(correiosService, viaCepService)
 
 	router.Get("/address/{cep}", addressHandler.Address)

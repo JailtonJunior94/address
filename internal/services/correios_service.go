@@ -10,15 +10,17 @@ import (
 	"github.com/jailtonjunior94/address/configs"
 	"github.com/jailtonjunior94/address/internal/dtos"
 	"github.com/jailtonjunior94/address/internal/interfaces"
+	"go.uber.org/zap"
 )
 
 type correiosService struct {
 	config     *configs.Config
+	logger     *zap.SugaredLogger
 	httpClient interfaces.HttpClient
 }
 
-func NewCorreiosService(config *configs.Config, httpClient interfaces.HttpClient) *correiosService {
-	return &correiosService{config: config, httpClient: httpClient}
+func NewCorreiosService(config *configs.Config, logger *zap.SugaredLogger, httpClient interfaces.HttpClient) *correiosService {
+	return &correiosService{config: config, logger: logger, httpClient: httpClient}
 }
 
 func (s *correiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error) {
@@ -34,6 +36,7 @@ func (s *correiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error
 		`
 	req, err := http.NewRequest(http.MethodPost, s.config.CorreiosBaseURL, bytes.NewBufferString(payload))
 	if err != nil {
+		s.logger.Errorw("could not make to request", zap.Error(err))
 		return nil, err
 	}
 
@@ -42,6 +45,7 @@ func (s *correiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error
 
 	res, err := s.httpClient.Do(req)
 	if err != nil {
+		s.logger.Errorw("could not make to request", zap.Error(err))
 		return nil, err
 	}
 
@@ -51,12 +55,14 @@ func (s *correiosService) AddressByCEP(cep string) (*dtos.AddressResponse, error
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		b, _ := io.ReadAll(res.Body)
+		s.logger.Errorw("could not make to request", zap.Error(err))
 		return nil, fmt.Errorf("[ERROR] [StatusCode] [%d] [Detail] [%s]", res.StatusCode, string(b))
 	}
 
 	var result *dtos.CorreiosResponse
 	err = xml.NewDecoder(res.Body).Decode(&result)
 	if err != nil {
+		s.logger.Errorw("could not decoder xml", zap.Error(err))
 		return nil, err
 	}
 

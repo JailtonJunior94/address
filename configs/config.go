@@ -5,6 +5,7 @@ import (
 )
 
 type Config struct {
+	DevelopmentMode   bool   `mapstructure:"DEVELOPMENT_MODE"`
 	HttpServerPort    string `mapstructure:"HTTP_SERVER_PORT"`
 	HttpClientTimeout int    `mapstructure:"HTTP_CLIENT_TIMEOUT_MS"`
 	CorreiosBaseURL   string `mapstructure:"CORREIOS_BASE_URL"`
