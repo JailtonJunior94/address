@@ -1,15 +1,15 @@
 application:
-  replicas: 3
+  replicas: 1
   image:
     name: "jailtonjunior/address-api"
-    tag: "v1"
+    tag: "v2"
   configMap:
     server:
-      port: "8000"
+      port: "3000"
     httpTimeout: 60000
     correiosBaseURL: https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente?wsdl
     viaCepBaseURL: https://viacep.com.br/ws/%s/json/
   service:
-    type: LoadBalancer
+    type: NodePort
   ingress:
     enable: false
