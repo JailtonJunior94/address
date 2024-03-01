@@ -14,3 +14,16 @@ services:
       HTTP_CLIENT_TIMEOUT_MS: 60000
       CORREIOS_BASE_URL: https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente?wsdl
       VIACEP_BASE_URL: https://viacep.com.br/ws/%s/json/
+
+  mockserver:
+    image: mockserver/mockserver
+    ports:
+      - "1080:1090"
+    environment:
+      MOCKSERVER_LOG_LEVEL: DEBUG
+      MOCKSERVER_SERVER_PORT: 1090
+      PROXY_REMOTE_HOST: mockserver-target
+      PROXY_REMOTE_PORT: 4567
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/expectationInitialiser.json
+    volumes:
+      - ./config:/config

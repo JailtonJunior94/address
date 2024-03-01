@@ -38,9 +38,6 @@ func main() {
 	}
 
 	logger := logger.NewLogger(config)
-	if err != nil {
-		panic(err)
-	}
 	defer logger.Sync()
 
 	router := chi.NewRouter()
